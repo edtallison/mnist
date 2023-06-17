@@ -44,8 +44,6 @@ optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 def train(epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
-        # print(data.shape)
-        # print(target.shape)
         output = model(data)
         loss = criterion(output, target)
         optimizer.zero_grad()

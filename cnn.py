@@ -52,8 +52,6 @@ def train():
     model.train()
     for epoch in range(10):
         for batch_idx, (data, target) in enumerate(train_loader):
-            # print(data.shape)
-            # print(target.shape)
             output = model(data)
             loss = criterion(output, target)
             optimizer.zero_grad()
