@@ -29,6 +29,8 @@ class MLP(nn.Module):
         self.layers = nn.Sequential(
             nn.Linear(28*28, 128),
             nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.ReLU(),
             nn.Linear(128, 10),
             nn.LogSoftmax(dim=1)
         )
@@ -55,3 +57,33 @@ def train(epoch):
             print("Train Epoch: {}, iteration: {}, Loss: {}".format(
                 epoch, batch_idx, loss.item()
             ))
+        wandb.log({"Train Loss": loss.item()})
+
+def test():
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_loader:
+            output = model(data)
+            test_loss += criterion(output, target).item()
+            pred = output.data.max(1, keepdim=True)[1]
+            correct += pred.eq(target.data.view_as(pred)).sum().item()
+    
+    test_loss /= len(test_loader.dataset)
+    test_accuracy = 100. * correct / len(test_loader.dataset)
+    print("Test loss: {}, Accuracy: {}".format(
+        test_loss, test_accuracy
+    ))
+    return test_loss, test_accuracy
+
+wandb.init(project="mnist")
+wandb.watch(model, log="all")
+
+for epoch in range(1, 10):
+    train(epoch)
+    test_loss, test_accuracy = test()
+    wandb.log({"Test Accuracy": test_accuracy, "Test Loss": test_loss})
+
+torch.save(model.state_dict(), "models/mlp.pth")
+wandb.save("mlp.pth")
