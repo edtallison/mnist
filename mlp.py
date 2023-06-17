@@ -26,10 +26,8 @@ test_loader = torch.utils.data.DataLoader(
 class MLP(nn.Module):
     def __init__(self):
         super(MLP, self).__init__()
-        self.layers = nn.Sequential(
+        self.model = nn.Sequential(
             nn.Linear(28*28, 128),
-            nn.ReLU(),
-            nn.Linear(128, 128),
             nn.ReLU(),
             nn.Linear(128, 10),
             nn.LogSoftmax(dim=1)
@@ -37,7 +35,7 @@ class MLP(nn.Module):
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
-        return self.layers(x)
+        return self.model(x)
     
 model = MLP()
 criterion = nn.CrossEntropyLoss()
